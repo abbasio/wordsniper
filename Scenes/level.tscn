@@ -1,13 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bdhy1dm7d7ll0"]
+[gd_scene load_steps=12 format=3 uid="uid://bdhy1dm7d7ll0"]
 
 [ext_resource type="Script" uid="uid://m4d370uq7vp0" path="res://Scripts/game.gd" id="1_6phgx"]
-[ext_resource type="Texture2D" uid="uid://dfjikt3nyag46" path="res://Assets/player.png" id="1_tumq0"]
 [ext_resource type="PackedScene" uid="uid://dfsdio17ltiyb" path="res://Scenes/enemy.tscn" id="2_81xng"]
 [ext_resource type="Script" uid="uid://fo3tp5b70kgb" path="res://Scripts/player.gd" id="2_k5f4k"]
+[ext_resource type="Texture2D" uid="uid://wvnlreu7akyj" path="res://Assets/prototype_character.png" id="5_0f350"]
 [ext_resource type="FontFile" uid="uid://dgjjitees1ouv" path="res://Assets/monogram.ttf" id="5_wqkje"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5xgho"]
-size = Vector2(32, 32)
 
 [sub_resource type="Curve2D" id="Curve2D_6phgx"]
 _data = {
@@ -15,35 +12,40 @@ _data = {
 }
 point_count = 5
 
-[node name="Level" type="Node" node_paths=PackedStringArray("enemy_spawn_timer", "enemy_spawn_location", "player")]
+[sub_resource type="CanvasTexture" id="CanvasTexture_wqkje"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8c0lf"]
+atlas = ExtResource("5_0f350")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_754fn"]
+atlas = ExtResource("5_0f350")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wqkje"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8c0lf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_754fn")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_754fn"]
+size = Vector2(20, 18)
+
+[node name="Level" type="Node" node_paths=PackedStringArray("enemy_spawn_timer", "enemy_spawn_location", "player", "score_label")]
 script = ExtResource("1_6phgx")
 enemy_scene = ExtResource("2_81xng")
 enemy_spawn_timer = NodePath("EnemySpawnTimer")
 enemy_spawn_location = NodePath("EnemyPath/EnemySpawnLocation")
 player = NodePath("Player")
-
-[node name="Player" type="Area2D" parent="." node_paths=PackedStringArray("input_text")]
-position = Vector2(656, 336)
-script = ExtResource("2_k5f4k")
-input_text = NodePath("RichTextLabel")
-metadata/_edit_group_ = true
-
-[node name="Sprite2D" type="Sprite2D" parent="Player"]
-texture = ExtResource("1_tumq0")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-shape = SubResource("RectangleShape2D_5xgho")
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Player"]
-offset_left = -32.0
-offset_top = -40.0
-offset_right = 32.0
-offset_bottom = -16.0
-theme_override_fonts/normal_font = ExtResource("5_wqkje")
-bbcode_enabled = true
-scroll_active = false
-horizontal_alignment = 1
-vertical_alignment = 1
+score_label = NodePath("Score")
 
 [node name="EnemyPath" type="Path2D" parent="."]
 curve = SubResource("Curve2D_6phgx")
@@ -51,5 +53,58 @@ curve = SubResource("Curve2D_6phgx")
 [node name="EnemySpawnLocation" type="PathFollow2D" parent="EnemyPath"]
 
 [node name="EnemySpawnTimer" type="Timer" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(0.28627452, 0.20392157, 0.21568628, 1)
+z_index = -1
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 1328.0
+offset_bottom = 744.0
+texture = SubResource("CanvasTexture_wqkje")
+
+[node name="Score" type="RichTextLabel" parent="."]
+offset_right = 128.0
+offset_bottom = 56.0
+theme_override_fonts/normal_font = ExtResource("5_wqkje")
+theme_override_font_sizes/normal_font_size = 64
+text = "0
+
+"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Player" type="Area2D" parent="." node_paths=PackedStringArray("input_text", "animated_sprite")]
+position = Vector2(640, 360)
+scale = Vector2(2, 2)
+script = ExtResource("2_k5f4k")
+input_text = NodePath("RichTextLabel")
+animated_sprite = NodePath("AnimatedSprite2D")
+metadata/_edit_group_ = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+sprite_frames = SubResource("SpriteFrames_wqkje")
+animation = &"idle"
+frame_progress = 0.9817666
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_754fn")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Player"]
+offset_left = -40.0
+offset_top = -56.0
+offset_right = 40.0
+offset_bottom = -24.0
+theme_override_fonts/normal_font = ExtResource("5_wqkje")
+theme_override_font_sizes/normal_font_size = 32
+bbcode_enabled = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="body_entered" from="Player" to="Player" method="_on_body_entered"]

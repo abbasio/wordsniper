@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var sprite: AnimatedSprite2D
 @export var player: Area2D
 
-var speed = 20.0
+var speed = 15.0
 var current_letter: Alphabet.letters
 var letter_label: String
 var active: bool = false
@@ -18,9 +18,9 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if active:
-		sprite.modulate.a = 1
+		sprite.modulate = Color(0, 0, 1, 1)
 	else:
-		sprite.modulate.a = 0.25
+		sprite.modulate = Color(0, 0, 1, 0.25)
 	if player:
 		var direction = global_position.direction_to(player.global_position)
 		velocity = direction * speed

@@ -4,10 +4,12 @@ extends Node
 @export var enemy_spawn_timer: Timer
 @export var enemy_spawn_location: PathFollow2D
 @export var player: Player
+@export var score_label: RichTextLabel
 
 var dictionary: Dictionary = {}
 var typed_word: String = ""
-
+var score: int = 0
+var first_letter: Enemy
 
 func _ready() -> void:
 	# Load words from text file
@@ -16,7 +18,7 @@ func _ready() -> void:
 	for word in content:
 		dictionary[word] = 1
 
-	enemy_spawn_timer.wait_time = 1.0
+	enemy_spawn_timer.wait_time = 1.4
 	enemy_spawn_timer.timeout.connect(spawn_enemy)
 	enemy_spawn_timer.start()
 
@@ -30,8 +32,11 @@ func _process(_delta):
 	if Input.is_action_just_pressed("submit_word"):
 		var is_word_valid = typed_word in dictionary 
 		var enemies = get_enemies()
-		if is_word_valid:
+		if typed_word.length() <= 1:
+			print('need longer word')
+		elif is_word_valid:
 			print("Word is valid!")
+			score += 10 * typed_word.length()
 			for enemy in enemies:
 				if enemy.active: 
 					enemy.queue_free()
@@ -40,6 +45,7 @@ func _process(_delta):
 		typed_word = ""
 		for enemy in enemies:
 			enemy.active = false
+	score_label.text = str(score)	
 
 func spawn_enemy():
 	var enemy: Enemy = enemy_scene.instantiate()
@@ -61,6 +67,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				if enemy.letter_label == lc_letter and !enemy.active:
 					enemy.active = true
 					activated = true
+					if typed_word.is_empty():
+						first_letter = enemy
 					break
 			
 			if activated:
