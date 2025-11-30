@@ -45,7 +45,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_754fn"]
 size = Vector2(20, 18)
 
-[node name="Level" type="Node" node_paths=PackedStringArray("enemy_spawn_timer", "enemy_spawn_location", "difficulty_timer", "reminder_text_timer", "player", "camera", "score_label", "reminder_label", "arrow", "sfx_key_click", "sfx_letter_hit", "sfx_player_hit")]
+[node name="Level" type="Node" node_paths=PackedStringArray("enemy_spawn_timer", "enemy_spawn_location", "difficulty_timer", "reminder_text_timer", "player", "camera", "score_label", "reminder_label", "arrow", "sfx_key_click", "sfx_letter_hit", "sfx_player_hit", "game_over_screen")]
 script = ExtResource("1_6phgx")
 enemy_scene = ExtResource("2_81xng")
 enemy_spawn_timer = NodePath("EnemySpawnTimer")
@@ -60,6 +60,7 @@ arrow = NodePath("Player/Arrow")
 sfx_key_click = NodePath("sfx_key_click")
 sfx_letter_hit = NodePath("sfx_letter_hit")
 sfx_player_hit = NodePath("sfx_player_hit")
+game_over_screen = NodePath("Game Over")
 
 [node name="EnemyPath" type="Path2D" parent="."]
 curve = SubResource("Curve2D_6phgx")
@@ -78,9 +79,9 @@ position = Vector2(640, 360)
 [node name="TextureRect" type="TextureRect" parent="."]
 modulate = Color(0.28627452, 0.20392157, 0.21568628, 1)
 z_index = -1
-offset_left = -32.0
+offset_left = -40.0
 offset_top = -40.0
-offset_right = 1328.0
+offset_right = 1320.0
 offset_bottom = 736.0
 texture = SubResource("CanvasTexture_wqkje")
 
@@ -174,4 +175,30 @@ stream = ExtResource("10_qxfql")
 [node name="sfx_player_hit" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("10_oqgf2")
 
+[node name="Game Over" type="Control" parent="."]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+
+[node name="Button" type="Button" parent="Game Over"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -92.0
+offset_top = -40.0
+offset_right = 92.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("5_wqkje")
+theme_override_font_sizes/font_size = 32
+text = "RESTART"
+
 [connection signal="body_entered" from="Player" to="Player" method="_on_body_entered"]
+[connection signal="pressed" from="Game Over/Button" to="." method="_on_restart_button_pressed"]

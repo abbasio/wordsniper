@@ -14,6 +14,7 @@ extends Node
 @export var sfx_key_click: AudioStreamPlayer2D
 @export var sfx_letter_hit: AudioStreamPlayer2D
 @export var sfx_player_hit: AudioStreamPlayer2D
+@export var game_over_screen: Control
 
 var dictionary: Dictionary = {}
 var typed_word: String = ""
@@ -143,7 +144,7 @@ func snipe() -> void:
 	tween.tween_callback(arrow.look_at.bind(player.global_position))
 	tween.tween_property(arrow, "global_position", player.global_position, 0.15)
 	await tween.finished
-	arrow.rotation = deg_to_rad(-36)
+	if (arrow): arrow.rotation = deg_to_rad(-36)
 	score += 10 * typed_word.length()
 	clear()	
 
@@ -153,14 +154,14 @@ func on_player_hit() -> void:
 	sfx_player_hit.play()
 
 func game_over() -> void:
+	reminder_label.push_color(Color.WHITE)
+	reminder_label.text = "FINAL SCORE: " + str(score)
+	game_over_screen.visible = true
 	shake_camera()
 	clear()
 	enemy_spawn_timer.stop()
 	difficulty_timer.stop()
 	score_label.visible = false
-	get_tree().paused = true
 
-# when a valid word is submitted, we should fire a projectile to the first letter of that word
-# the projectile should then bounce to all the following letters, in order
-# at each bounce, a sound effect should play, and the score multiplier should go up
-# once the word is fully completed, the score updates
+func _on_restart_button_pressed() -> void:
+	get_tree().reload_current_scene()
