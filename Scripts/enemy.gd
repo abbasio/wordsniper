@@ -12,7 +12,8 @@ var active: bool = false
 
 func _ready() -> void:
 	var rng = RandomNumberGenerator.new()
-	var weights = PackedFloat32Array([2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1])
+	# use letters weights from scrabble lol
+	var weights = PackedFloat32Array([9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1])
 	current_letter = letters[rng.rand_weighted(weights)] as Alphabet.letters
 	sprite.frame = current_letter
 	letter_label = Alphabet.map_enum_to_letter[current_letter]

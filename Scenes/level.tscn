@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://bdhy1dm7d7ll0"]
+[gd_scene load_steps=13 format=3 uid="uid://bdhy1dm7d7ll0"]
 
 [ext_resource type="Script" uid="uid://m4d370uq7vp0" path="res://Scripts/game.gd" id="1_6phgx"]
 [ext_resource type="PackedScene" uid="uid://dfsdio17ltiyb" path="res://Scenes/enemy.tscn" id="2_81xng"]
 [ext_resource type="Script" uid="uid://fo3tp5b70kgb" path="res://Scripts/player.gd" id="2_k5f4k"]
+[ext_resource type="PackedScene" uid="uid://o0mjys0j0t8s" path="res://Scenes/orb.tscn" id="3_0f350"]
 [ext_resource type="Texture2D" uid="uid://wvnlreu7akyj" path="res://Assets/prototype_character.png" id="5_0f350"]
 [ext_resource type="FontFile" uid="uid://dgjjitees1ouv" path="res://Assets/monogram.ttf" id="5_wqkje"]
 
@@ -42,6 +43,7 @@ size = Vector2(20, 18)
 [node name="Level" type="Node" node_paths=PackedStringArray("enemy_spawn_timer", "enemy_spawn_location", "player", "score_label")]
 script = ExtResource("1_6phgx")
 enemy_scene = ExtResource("2_81xng")
+orb_scene = ExtResource("3_0f350")
 enemy_spawn_timer = NodePath("EnemySpawnTimer")
 enemy_spawn_location = NodePath("EnemyPath/EnemySpawnLocation")
 player = NodePath("Player")
