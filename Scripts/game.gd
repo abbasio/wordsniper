@@ -85,11 +85,16 @@ func clear() -> void:
 	for enemy in enemies:
 		enemy.active = false
 
+func set_pitch(sfx: AudioStreamPlayer2D, index: int):
+	var modifier = clamp(0.8 + index * .1, 0, 1.2)
+	sfx.pitch_scale = modifier
+
 func snipe() -> void:
 	var tween = create_tween()
 	for i in range (active_letters.size()):
 		tween.tween_callback(arrow.look_at.bind(active_letters[i].global_position))
 		tween.tween_property(arrow, "global_position", active_letters[i].global_position, 0.15)
+		tween.tween_callback(set_pitch.bind(sfx_letter_hit, i))
 		tween.tween_callback(sfx_letter_hit.play)
 		tween.tween_callback(active_letters[i].queue_free)
 	
