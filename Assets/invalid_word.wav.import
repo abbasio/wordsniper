@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://csrlgj7chy3dd"
-path="res://.godot/imported/Block Break 1.wav-338c99e514541eb3a393421594846faa.sample"
+path="res://.godot/imported/invalid_word.wav-cd7fafdeb3815e235e2feb49c94b9a17.sample"
 
 [deps]
 
-source_file="res://Assets/Block Break 1.wav"
-dest_files=["res://.godot/imported/Block Break 1.wav-338c99e514541eb3a393421594846faa.sample"]
+source_file="res://Assets/invalid_word.wav"
+dest_files=["res://.godot/imported/invalid_word.wav-cd7fafdeb3815e235e2feb49c94b9a17.sample"]
 
 [params]
 

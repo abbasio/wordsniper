@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://by07lp2e26y4m"]
+
+[ext_resource type="FontFile" uid="uid://dgjjitees1ouv" path="res://Assets/monogram.ttf" id="1_28flt"]
+[ext_resource type="Script" uid="uid://bah3gnw8p7jua" path="res://Scripts/main_menu.gd" id="1_48xlc"]
+
+[node name="Main Menu" type="Node2D"]
+script = ExtResource("1_48xlc")
+
+[node name="Button Manager" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 744.0
+
+[node name="ColorRect" type="ColorRect" parent="Button Manager"]
+z_index = -1
+layout_mode = 0
+offset_left = -144.0
+offset_top = -72.0
+offset_right = 1416.0
+offset_bottom = 840.0
+color = Color(0.28627452, 0.20392157, 0.21568628, 1)
+
+[node name="Start" type="Button" parent="Button Manager"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -52.0
+offset_right = 64.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_28flt")
+theme_override_font_sizes/font_size = 32
+text = "START
+"
+
+[connection signal="pressed" from="Button Manager/Start" to="." method="_on_start_pressed"]

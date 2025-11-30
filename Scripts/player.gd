@@ -14,6 +14,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	health_bar.value = health
 	if health == 0:
+		SignalBus.player_died.emit()
 		queue_free()
 
 func _on_body_entered(body: Node2D) -> void:

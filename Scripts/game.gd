@@ -4,12 +4,15 @@ extends Node
 @export var enemy_spawn_timer: Timer
 @export var enemy_spawn_location: PathFollow2D
 @export var difficulty_timer: Timer
+@export var reminder_text_timer: Timer
 
 @export var player: Player
 @export var score_label: RichTextLabel
+@export var reminder_label: RichTextLabel
 @export var arrow: Sprite2D
 @export var sfx_key_click: AudioStreamPlayer2D
 @export var sfx_letter_hit: AudioStreamPlayer2D
+@export var sfx_player_hit: AudioStreamPlayer2D
 
 var dictionary: Dictionary = {}
 var typed_word: String = ""
@@ -18,7 +21,8 @@ var active_letters: Array[Enemy] = []
 var enemy_speed: float = 10.0
 
 func _ready() -> void:
-	SignalBus.player_hit.connect(clear)
+	SignalBus.player_hit.connect(on_player_hit)
+	SignalBus.player_died.connect(game_over)
 	# Load words from text file
 	var file = FileAccess.open("res://Assets/words_alpha.txt", FileAccess.READ)
 	var content := file.get_as_text().replace("\r", "").split("\n", false)
@@ -28,6 +32,10 @@ func _ready() -> void:
 	enemy_spawn_timer.wait_time = 1.6
 	enemy_spawn_timer.timeout.connect(spawn_enemy)
 	enemy_spawn_timer.start()
+
+	reminder_text_timer.wait_time = 2.0
+	reminder_text_timer.one_shot = true
+	reminder_text_timer.timeout.connect(func(): reminder_label.text = "")
 
 	difficulty_timer.wait_time = 30.0
 	difficulty_timer.timeout.connect(increase_difficulty)
@@ -41,12 +49,16 @@ func _process(_delta):
 	if Input.is_action_just_pressed("submit_word"):
 		var is_word_valid = typed_word in dictionary 
 		if typed_word.length() <= 2:
-			print('need longer word')
+			reminder_label.text = "Words must be 3 or more letters!"
+			sfx_player_hit.play()
+			reminder_text_timer.start()
 			clear()
 		elif is_word_valid:
 			snipe()
 		else: 
-			print("Word is invalid.")
+			reminder_label.text = typed_word + " is an invalid word!"
+			sfx_player_hit.play()
+			reminder_text_timer.start()
 			clear()
 	score_label.text = str(score)	
 
@@ -71,6 +83,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var enemies = get_enemies()
 			var closest_valid_enemy = null
 			for enemy in enemies:
+				if (!player): break
 				if enemy.letter_label == lc_letter and !enemy.active:
 					if !closest_valid_enemy:
 						closest_valid_enemy = enemy
@@ -120,6 +133,17 @@ func snipe() -> void:
 	arrow.rotation = deg_to_rad(-36)
 	score += 10 * typed_word.length()
 	clear()	
+
+func on_player_hit() -> void:
+	clear()
+	sfx_player_hit.play()
+
+func game_over() -> void:
+	clear()
+	enemy_spawn_timer.stop()
+	difficulty_timer.stop()
+	score_label.visible = false
+	get_tree().paused = true
 
 # when a valid word is submitted, we should fire a projectile to the first letter of that word
 # the projectile should then bounce to all the following letters, in order
