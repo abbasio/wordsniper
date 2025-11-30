@@ -197,7 +197,7 @@ animations = [{
 size = Vector2(7, 9)
 
 [node name="Enemy" type="CharacterBody2D" node_paths=PackedStringArray("sprite") groups=["enemies"]]
-scale = Vector2(2, 2)
+scale = Vector2(3.5, 3.5)
 collision_mask = 0
 script = ExtResource("1_1f0kj")
 sprite = NodePath("Letter")

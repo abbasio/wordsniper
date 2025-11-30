@@ -3,6 +3,8 @@ extends Node
 @export var enemy_scene: PackedScene
 @export var enemy_spawn_timer: Timer
 @export var enemy_spawn_location: PathFollow2D
+@export var difficulty_timer: Timer
+
 @export var player: Player
 @export var score_label: RichTextLabel
 @export var arrow: Sprite2D
@@ -13,6 +15,7 @@ var dictionary: Dictionary = {}
 var typed_word: String = ""
 var score: int = 0
 var active_letters: Array[Enemy] = []
+var enemy_speed: float = 10.0
 
 func _ready() -> void:
 	SignalBus.player_hit.connect(clear)
@@ -22,12 +25,17 @@ func _ready() -> void:
 	for word in content:
 		dictionary[word] = 1
 
-	enemy_spawn_timer.wait_time = 2.0
+	enemy_spawn_timer.wait_time = 1.6
 	enemy_spawn_timer.timeout.connect(spawn_enemy)
 	enemy_spawn_timer.start()
 
+	difficulty_timer.wait_time = 30.0
+	difficulty_timer.timeout.connect(increase_difficulty)
+	difficulty_timer.start()
+
 func _process(_delta):
-	player.input_text.text = typed_word
+	if player:
+		player.input_text.text = typed_word
 	if Input.is_action_just_pressed("backspace"):
 		clear()
 	if Input.is_action_just_pressed("submit_word"):
@@ -44,12 +52,16 @@ func _process(_delta):
 
 func spawn_enemy():
 	var enemy: Enemy = enemy_scene.instantiate()
-
 	enemy_spawn_location.progress_ratio = randf()
-
 	enemy.position = enemy_spawn_location.position 
 	enemy.player = player
+	enemy.speed = enemy_speed
 	add_child(enemy)
+
+func increase_difficulty():
+	enemy_spawn_timer.wait_time = clamp(0.8, enemy_spawn_timer.wait_time - 0.1, enemy_spawn_timer.wait_time)
+	enemy_speed = clamp (enemy_speed, enemy_speed + 5.0, 50)
+	print(enemy_speed)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and not event.is_pressed():
@@ -86,15 +98,19 @@ func clear() -> void:
 		enemy.active = false
 
 func set_pitch(sfx: AudioStreamPlayer2D, index: int):
-	var modifier = clamp(0.8 + index * .1, 0, 1.2)
+	var modifier = clamp(0.5 + index * .1, 0, 1.0)
 	sfx.pitch_scale = modifier
+
+func increase_score(combo: int):
+	set_pitch(sfx_letter_hit, combo)
+	score += 10 * combo
 
 func snipe() -> void:
 	var tween = create_tween()
 	for i in range (active_letters.size()):
 		tween.tween_callback(arrow.look_at.bind(active_letters[i].global_position))
 		tween.tween_property(arrow, "global_position", active_letters[i].global_position, 0.15)
-		tween.tween_callback(set_pitch.bind(sfx_letter_hit, i))
+		tween.tween_callback(increase_score.bind(i))
 		tween.tween_callback(sfx_letter_hit.play)
 		tween.tween_callback(active_letters[i].queue_free)
 	
@@ -102,7 +118,6 @@ func snipe() -> void:
 	tween.tween_property(arrow, "global_position", player.global_position, 0.15)
 	await tween.finished
 	arrow.rotation = deg_to_rad(-36)
-	print('tween finished')		
 	score += 10 * typed_word.length()
 	clear()	
 

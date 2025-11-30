@@ -17,7 +17,7 @@ config/features=PackedStringArray("4.5", "GL Compatibility")
 [autoload]
 
 Alphabet="*res://Scripts/letters.gd"
-SignalBus="*res://Scripts/signalbus.gd"
+SignalBus="*res://Scripts/signal_bus.gd"
 
 [display]
 
