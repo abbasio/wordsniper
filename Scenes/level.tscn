@@ -78,18 +78,19 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Player" type="Area2D" parent="." node_paths=PackedStringArray("input_text", "animated_sprite")]
+[node name="Player" type="Area2D" parent="." node_paths=PackedStringArray("input_text", "animated_sprite", "health_bar")]
 position = Vector2(640, 360)
 scale = Vector2(2, 2)
 script = ExtResource("2_k5f4k")
 input_text = NodePath("RichTextLabel")
 animated_sprite = NodePath("AnimatedSprite2D")
+health_bar = NodePath("HealthBar")
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
 sprite_frames = SubResource("SpriteFrames_wqkje")
 animation = &"idle"
-frame_progress = 0.68932354
+frame_progress = 0.84071845
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2(0, 1)
@@ -106,5 +107,15 @@ bbcode_enabled = true
 scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="Player"]
+offset_left = -20.0
+offset_top = 12.0
+offset_right = 20.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 8
+max_value = 10.0
+step = 1.0
+show_percentage = false
 
 [connection signal="body_entered" from="Player" to="Player" method="_on_body_entered"]
