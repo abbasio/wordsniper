@@ -1,6 +1,6 @@
 [gd_scene load_steps=31 format=3 uid="uid://dfsdio17ltiyb"]
 
-[ext_resource type="Script" uid="uid://djgbkk6e5d6x4" path="res://Scripts/enemy.gd" id="1_1f0kj"]
+[ext_resource type="Script" uid="uid://djgbkk6e5d6x4" path="res://Scripts/letters.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://c024gbecgkkkm" path="res://Assets/monogram-bitmap.png" id="1_hghv2"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1f0kj"]
@@ -196,7 +196,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hghv2"]
 size = Vector2(7, 9)
 
-[node name="Enemy" type="CharacterBody2D" node_paths=PackedStringArray("sprite") groups=["enemies"]]
+[node name="Letter" type="CharacterBody2D" node_paths=PackedStringArray("sprite") groups=["letters"]]
 scale = Vector2(3.5, 3.5)
 collision_mask = 0
 script = ExtResource("1_1f0kj")

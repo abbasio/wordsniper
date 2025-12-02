@@ -1,8 +1,8 @@
 extends Node
 
-@export var enemy_scene: PackedScene
-@export var enemy_spawn_timer: Timer
-@export var enemy_spawn_location: PathFollow2D
+@export var letter_scene: PackedScene
+@export var letter_spawn_timer: Timer
+@export var letter_spawn_location: PathFollow2D
 @export var difficulty_timer: Timer
 @export var reminder_text_timer: Timer
 
@@ -19,8 +19,8 @@ extends Node
 var dictionary: Dictionary = {}
 var typed_word: String = ""
 var score: int = 0
-var active_letters: Array[Enemy] = []
-var enemy_speed: float = 10.0
+var active_letters: Array[Letter] = []
+var letter_speed: float = 10.0
 var max_shake: float = 10.0
 var camera_shake_fade: float = 10.0
 
@@ -35,9 +35,9 @@ func _ready() -> void:
 	for word in content:
 		dictionary[word] = 1
 
-	enemy_spawn_timer.wait_time = 1.6
-	enemy_spawn_timer.timeout.connect(spawn_enemy)
-	enemy_spawn_timer.start()
+	letter_spawn_timer.wait_time = 1.6
+	letter_spawn_timer.timeout.connect(spawn_letter)
+	letter_spawn_timer.start()
 
 	reminder_text_timer.wait_time = 2.0
 	reminder_text_timer.one_shot = true
@@ -54,7 +54,8 @@ func _process(_delta):
 	if player:
 		player.input_text.text = typed_word
 	if Input.is_action_just_pressed("backspace"):
-		backspace()
+		if (active_letters.size()):
+			backspace()
 	if Input.is_action_just_pressed("submit_word"):
 		var is_word_valid = typed_word in dictionary 
 		if typed_word.length() <= 2:
@@ -76,50 +77,50 @@ func _process(_delta):
 func shake_camera():
 	_shake_strength = max_shake
 
-func spawn_enemy():
-	var enemy: Enemy = enemy_scene.instantiate()
-	enemy_spawn_location.progress_ratio = randf()
-	enemy.position = enemy_spawn_location.position 
-	enemy.player = player
-	enemy.speed = enemy_speed
-	add_child(enemy)
+func spawn_letter():
+	var letter = letter_scene.instantiate()
+	letter_spawn_location.progress_ratio = randf()
+	letter.position = letter_spawn_location.position 
+	letter.player = player
+	letter.speed = letter_speed
+	add_child(letter)
 
 func increase_difficulty():
-	enemy_spawn_timer.wait_time = clamp(0.8, enemy_spawn_timer.wait_time - 0.1, enemy_spawn_timer.wait_time)
-	enemy_speed = clamp (enemy_speed, enemy_speed + 5.0, 50)
+	letter_spawn_timer.wait_time = clamp(0.8, letter_spawn_timer.wait_time - 0.1, letter_spawn_timer.wait_time)
+	letter_speed = clamp (letter_speed, letter_speed + 5.0, 50)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and not event.is_pressed():
 		var key_label = event.as_text_physical_keycode()
 		if key_label.length() == 1:
 			var lc_letter = key_label.to_lower()
-			var enemies = get_enemies()
-			var closest_valid_enemy = null
-			for enemy in enemies:
+			var letters = get_letters()
+			var closest_valid_letter = null
+			for letter in letters:
 				if (!player): break
-				if enemy.letter_label == lc_letter and !enemy.active:
-					if !closest_valid_enemy:
-						closest_valid_enemy = enemy
+				if letter.letter_label == lc_letter and !letter.active:
+					if !closest_valid_letter:
+						closest_valid_letter = letter
 					else:
-						if (enemy.global_position.distance_to(player.global_position) <= 
-						closest_valid_enemy.global_position.distance_to(player.global_position)):
-							closest_valid_enemy = enemy
+						if (letter.global_position.distance_to(player.global_position) <= 
+						closest_valid_letter.global_position.distance_to(player.global_position)):
+							closest_valid_letter = letter
 			
-			if closest_valid_enemy:
-				closest_valid_enemy.active = true
-				active_letters.append(closest_valid_enemy)
+			if closest_valid_letter:
+				closest_valid_letter.active = true
+				active_letters.append(closest_valid_letter)
 				typed_word += lc_letter
 				sfx_key_click.play()
 				
-func get_enemies() -> Array[Node]:
-	return get_tree().get_nodes_in_group(Alphabet.enemies)
+func get_letters() -> Array[Node]:
+	return get_tree().get_nodes_in_group(Alphabet.letter_group_name)
 
 func clear() -> void:
 	typed_word = ""
 	active_letters = []
-	var enemies = get_enemies()
-	for enemy in enemies:
-		enemy.active = false
+	var letters = get_letters()
+	for letter in letters:
+		letter.active = false
 
 func set_pitch(sfx: AudioStreamPlayer2D, index: int):
 	var modifier = clamp(0.5 + index * .1, 0, 1.0)
@@ -156,7 +157,7 @@ func game_over() -> void:
 	game_over_screen.visible = true
 	shake_camera()
 	clear()
-	enemy_spawn_timer.stop()
+	letter_spawn_timer.stop()
 	difficulty_timer.stop()
 	score_label.visible = false
 

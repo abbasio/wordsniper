@@ -1,63 +1,30 @@
-extends Node
+class_name Letter
+extends CharacterBody2D
 
-enum letters {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z}
+@export var sprite: AnimatedSprite2D
+@export var player: Area2D
 
-var map_enum_to_letter: Dictionary = {
-    letters.A: 'a',
-    letters.B: 'b',
-    letters.C: 'c',
-    letters.D: 'd',
-    letters.E: 'e',
-    letters.F: 'f',
-    letters.G: 'g',
-    letters.H: 'h',
-    letters.I: 'i',
-    letters.J: 'j',
-    letters.K: 'k',
-    letters.L: 'l',
-    letters.M: 'm',
-    letters.N: 'n',
-    letters.O: 'o',
-    letters.P: 'p',
-    letters.Q: 'q',
-    letters.R: 'r',
-    letters.S: 's',
-    letters.T: 't',
-    letters.U: 'u',
-    letters.V: 'v',
-    letters.W: 'w',
-    letters.X: 'x',
-    letters.Y: 'y',
-    letters.Z: 'z',
-}
+var speed = 15.0
+var letter_index: int
+var letter_label: String
+var active: bool = false
 
-var enemies: StringName = "enemies"
+func _ready() -> void:
+	var rng = RandomNumberGenerator.new()
+	# use letters weights from scrabble lol
+	var weights = PackedFloat32Array([9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1])
+	letter_index = rng.rand_weighted(weights)
+	letter_label = Alphabet.letters[letter_index]
+	sprite.frame = letter_index
 
-var active_enemies: Dictionary[String, Array] = {
-    'a': [],
-    'b': [],
-    'c': [],
-    'd': [],
-    'e': [],
-    'f': [],
-    'g': [],
-    'h': [],
-    'i': [],
-    'j': [],
-    'k': [],
-    'l': [],
-    'm': [],
-    'n': [],
-    'o': [],
-    'p': [],
-    'q': [],
-    'r': [],
-    's': [],
-    't': [],
-    'u': [],
-    'v': [],
-    'w': [],
-    'x': [],
-    'y': [],
-    'z': [],
-}
+func _physics_process(_delta: float) -> void:
+	if active:
+		sprite.modulate = Color(0, 0, 1, 1)
+	else:
+		sprite.modulate = Color(0, 0, 1, 0.25)
+	if player:
+		var direction = global_position.direction_to(player.global_position)
+		velocity = direction * speed
+		move_and_slide()
+	else:
+		velocity = Vector2.ZERO
