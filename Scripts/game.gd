@@ -54,7 +54,7 @@ func _process(_delta):
 	if player:
 		player.input_text.text = typed_word
 	if Input.is_action_just_pressed("backspace"):
-		clear()
+		backspace()
 	if Input.is_action_just_pressed("submit_word"):
 		var is_word_valid = typed_word in dictionary 
 		if typed_word.length() <= 2:
@@ -159,6 +159,11 @@ func game_over() -> void:
 	enemy_spawn_timer.stop()
 	difficulty_timer.stop()
 	score_label.visible = false
+
+func backspace() -> void:
+	var last_letter = active_letters.pop_back()
+	last_letter.active = false
+	typed_word = typed_word.left(typed_word.length() - 1)
 
 func _on_restart_button_pressed() -> void:
 	get_tree().reload_current_scene()
